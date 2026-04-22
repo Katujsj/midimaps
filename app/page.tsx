@@ -96,7 +96,7 @@ export default function Home() {
           <div style={{ padding: '20px 20px 14px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <h1 style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: 20, color: 'var(--text)', lineHeight: 1.2 }}>
-                전국 동아리원 <span style={{ color: 'var(--primary)' }}>지도</span>
+                미디올로지의 <span style={{ color: 'var(--primary)' }}>지도</span>
               </h1>
               {isMobile && (
                 <button
@@ -106,7 +106,7 @@ export default function Home() {
               )}
             </div>
             <p style={{ fontSize: 12, color: 'var(--text-dim)', marginTop: 6, lineHeight: 1.5 }}>
-              전국에 흩어진 미디올로지 동아리원을 한눈에
+              전국에 흩어진 미디올로지를 한눈에
             </p>
 
             {/* 통계 */}

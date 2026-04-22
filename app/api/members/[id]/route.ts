@@ -3,17 +3,16 @@ import { connectDB } from '@/lib/mongodb';
 import { getAuthUser } from '@/lib/auth';
 import Member from '@/models/Member';
 
-// PUT /api/members/[id] - 내 프로필 수정
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const user = await getAuthUser();
     if (!user) return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 });
 
     await connectDB();
-    const member = await Member.findById(params.id);
+    const member = await Member.findById(id);
     if (!member) return NextResponse.json({ error: '멤버를 찾을 수 없습니다.' }, { status: 404 });
 
-    // 본인만 수정 가능
     if (member.userId.toString() !== user.id) {
       return NextResponse.json({ error: '권한이 없습니다.' }, { status: 403 });
     }
@@ -29,14 +28,14 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-// DELETE /api/members/[id] - 내 프로필 삭제
-export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const user = await getAuthUser();
     if (!user) return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 });
 
     await connectDB();
-    const member = await Member.findById(params.id);
+    const member = await Member.findById(id);
     if (!member) return NextResponse.json({ error: '멤버를 찾을 수 없습니다.' }, { status: 404 });
 
     if (member.userId.toString() !== user.id) {
