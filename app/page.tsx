@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/app/auth-context';
 import Navbar from '@/components/Navbar';
 import MemberCard from '@/components/MemberCard';
@@ -22,6 +22,7 @@ export default function Home() {
   const [stats, setStats]             = useState({ total: 0, regions: 0 });
   const [isMobile, setIsMobile]       = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const mapInstanceRef                = useRef<any>(null);
 
   useEffect(() => {
     const check = () => {
@@ -230,30 +231,63 @@ export default function Home() {
 
         {/* ── 지도 영역 ───────────────────────────────────── */}
         <main style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
-          {/* 모바일 사이드바 열기 버튼 — 줌 컨트롤 위에 그룹으로 배치 */}
-          {isMobile && !sidebarOpen && (
-            <button
-              onClick={() => setSidebarOpen(true)}
-              style={{
-                position: 'absolute', top: 10, left: 10,
-                zIndex: 1001,
-                width: 26, height: 26,
-                background: 'var(--surface2)',
-                border: '2px solid var(--border)',
-                borderBottom: 'none',
-                borderRadius: '4px 4px 0 0',
-                color: 'var(--text)',
-                fontSize: 14,
-                lineHeight: 1,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer',
-                boxShadow: '0 1px 5px rgba(0,0,0,0.65)',
-              }}
-            >☰</button>
+          {/* 커스텀 줌 컨트롤 그룹 (사이드바 열기 포함) */}
+          {(!isMobile || !sidebarOpen) && (
+            <div style={{
+              position: 'absolute', top: 10, left: 10,
+              zIndex: 1001,
+              display: 'flex', flexDirection: 'column',
+              border: '2px solid var(--border)',
+              borderRadius: 4,
+              overflow: 'hidden',
+              boxShadow: '0 1px 5px rgba(0,0,0,0.65)',
+            }}>
+              {isMobile && (
+                <button
+                  onClick={() => setSidebarOpen(true)}
+                  style={{
+                    width: 26, height: 26,
+                    background: 'var(--surface2)',
+                    border: 'none',
+                    borderBottom: '1px solid var(--border)',
+                    color: 'var(--primary)',
+                    fontSize: 13,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer',
+                  }}
+                >☰</button>
+              )}
+              <button
+                onClick={() => mapInstanceRef.current?.zoomIn()}
+                style={{
+                  width: 26, height: 26,
+                  background: 'var(--surface2)',
+                  border: 'none',
+                  borderBottom: '1px solid var(--border)',
+                  color: 'var(--text)',
+                  fontSize: 18, fontWeight: 700, lineHeight: 1,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer',
+                }}
+              >+</button>
+              <button
+                onClick={() => mapInstanceRef.current?.zoomOut()}
+                style={{
+                  width: 26, height: 26,
+                  background: 'var(--surface2)',
+                  border: 'none',
+                  color: 'var(--text)',
+                  fontSize: 18, fontWeight: 700, lineHeight: 1,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer',
+                }}
+              >−</button>
+            </div>
           )}
           <MapView
             members={members}
             selectedId={selected?._id}
+            onMapReady={(map) => { mapInstanceRef.current = map; }}
             onMarkerClick={(m) => {
               setSelected(prev => prev?._id === m._id ? null : m);
               setTab('members');

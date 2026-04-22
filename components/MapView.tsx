@@ -7,9 +7,10 @@ interface Props {
   members: IMember[];
   onMarkerClick: (member: IMember) => void;
   selectedId?: string;
+  onMapReady?: (map: any) => void;
 }
 
-export default function MapView({ members, onMarkerClick, selectedId }: Props) {
+export default function MapView({ members, onMarkerClick, selectedId, onMapReady }: Props) {
   const mapRef = useRef<any>(null);
   const markersRef = useRef<Record<string, any>>({});
   const containerRef = useRef<HTMLDivElement>(null);
@@ -33,9 +34,9 @@ export default function MapView({ members, onMarkerClick, selectedId }: Props) {
       if ((containerRef.current as any)._leaflet_id) return;
 
       const map = L.map(containerRef.current, {
-        center: [36.5, 127.8], // 한국 중심
+        center: [36.5, 127.8],
         zoom: 7,
-        zoomControl: true,
+        zoomControl: false,
         attributionControl: false,
       });
 
@@ -46,6 +47,7 @@ export default function MapView({ members, onMarkerClick, selectedId }: Props) {
       }).addTo(map);
 
       mapRef.current = map;
+      onMapReady?.(map);
 
       // Attribution 커스텀 위치
       L.control.attribution({ position: 'bottomleft', prefix: '' }).addTo(map);
