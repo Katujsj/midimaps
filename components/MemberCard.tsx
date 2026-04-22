@@ -1,7 +1,7 @@
 'use client';
 
 import type { IMember } from '@/types';
-import { useAuth } from '@/app/layout';
+import { useAuth } from '@/app/auth-context';
 
 interface Props {
   member: IMember;

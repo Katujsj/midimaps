@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@/app/layout';
+import { useAuth } from '@/app/auth-context';
 import Navbar from '@/components/Navbar';
 import MemberCard from '@/components/MemberCard';
 import ProfileForm from '@/components/ProfileForm';
