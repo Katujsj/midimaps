@@ -230,29 +230,26 @@ export default function Home() {
 
         {/* ── 지도 영역 ───────────────────────────────────── */}
         <main style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
-          {/* 모바일 사이드바 열기 버튼 */}
+          {/* 모바일 사이드바 열기 버튼 — 줌 컨트롤 위에 그룹으로 배치 */}
           {isMobile && !sidebarOpen && (
             <button
               onClick={() => setSidebarOpen(true)}
               style={{
-                position: 'absolute', bottom: 32, left: '50%',
-                transform: 'translateX(-50%)',
-                zIndex: 300,
-                background: 'var(--surface)',
-                border: '1px solid var(--primary)',
-                borderRadius: 999,
+                position: 'absolute', top: 10, left: 10,
+                zIndex: 1001,
+                width: 26, height: 26,
+                background: 'var(--surface2)',
+                border: '2px solid var(--border)',
+                borderBottom: 'none',
+                borderRadius: '4px 4px 0 0',
                 color: 'var(--text)',
                 fontSize: 14,
-                fontWeight: 700,
-                padding: '10px 22px',
-                display: 'flex', alignItems: 'center', gap: 8,
+                lineHeight: 1,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
                 cursor: 'pointer',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 0 0 1px rgba(29,233,182,0.2)',
-                whiteSpace: 'nowrap',
+                boxShadow: '0 1px 5px rgba(0,0,0,0.65)',
               }}
-            >
-              <span style={{ fontSize: 16 }}>☰</span> 멤버 목록
-            </button>
+            >☰</button>
           )}
           <MapView
             members={members}
