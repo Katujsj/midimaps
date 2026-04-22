@@ -20,6 +20,8 @@ export default function LocationPicker({ lat, lng, onChange }: Props) {
       delete (L.Icon.Default.prototype as any)._getIconUrl;
 
       if (!containerRef.current) return;
+      if ((containerRef.current as any)._leaflet_id) return;
+
       const map = L.map(containerRef.current, {
         center: [lat || 36.5, lng || 127.8],
         zoom: 7,

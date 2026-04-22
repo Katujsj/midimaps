@@ -29,6 +29,9 @@ export default function MapView({ members, onMarkerClick, selectedId }: Props) {
 
       if (!containerRef.current) return;
 
+      // 이미 초기화된 컨테이너면 스킵
+      if ((containerRef.current as any)._leaflet_id) return;
+
       const map = L.map(containerRef.current, {
         center: [36.5, 127.8], // 한국 중심
         zoom: 7,
