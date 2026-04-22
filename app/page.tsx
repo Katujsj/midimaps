@@ -235,18 +235,24 @@ export default function Home() {
             <button
               onClick={() => setSidebarOpen(true)}
               style={{
-                position: 'absolute', top: 12, left: 12, zIndex: 300,
+                position: 'absolute', bottom: 32, left: '50%',
+                transform: 'translateX(-50%)',
+                zIndex: 300,
                 background: 'var(--surface)',
-                border: '1px solid var(--border)',
-                borderRadius: 10,
+                border: '1px solid var(--primary)',
+                borderRadius: 999,
                 color: 'var(--text)',
-                fontSize: 18,
-                width: 40, height: 40,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 14,
+                fontWeight: 700,
+                padding: '10px 22px',
+                display: 'flex', alignItems: 'center', gap: 8,
                 cursor: 'pointer',
-                boxShadow: '0 2px 12px rgba(0,0,0,0.4)',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 0 0 1px rgba(29,233,182,0.2)',
+                whiteSpace: 'nowrap',
               }}
-            >☰</button>
+            >
+              <span style={{ fontSize: 16 }}>☰</span> 멤버 목록
+            </button>
           )}
           <MapView
             members={members}
