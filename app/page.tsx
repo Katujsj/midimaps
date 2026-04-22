@@ -20,6 +20,19 @@ export default function Home() {
   const [tab, setTab]                 = useState<SideTab>('members');
   const [editing, setEditing]         = useState(false);
   const [stats, setStats]             = useState({ total: 0, regions: 0 });
+  const [isMobile, setIsMobile]       = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  useEffect(() => {
+    const check = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (mobile) setSidebarOpen(false);
+    };
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   const fetchMembers = useCallback(async () => {
     const res  = await fetch('/api/members');
@@ -47,7 +60,19 @@ export default function Home() {
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', overflow: 'hidden' }}>
       <Navbar />
 
-      <div style={{ flex: 1, display: 'flex', marginTop: 56, overflow: 'hidden' }}>
+      <div style={{ flex: 1, display: 'flex', marginTop: 56, overflow: 'hidden', position: 'relative' }}>
+
+        {/* ── 모바일 백드롭 ─────────────────────────────── */}
+        {isMobile && sidebarOpen && (
+          <div
+            onClick={() => setSidebarOpen(false)}
+            style={{
+              position: 'fixed', inset: 0, top: 56,
+              background: 'rgba(0,0,0,0.6)',
+              zIndex: 400,
+            }}
+          />
+        )}
 
         {/* ── 왼쪽 사이드바 ───────────────────────────────── */}
         <aside style={{
@@ -58,12 +83,28 @@ export default function Home() {
           background: 'var(--surface)',
           borderRight: '1px solid var(--border)',
           overflow: 'hidden',
+          ...(isMobile ? {
+            position: 'fixed',
+            top: 56, left: 0, bottom: 0,
+            zIndex: 500,
+            transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
+            transition: 'transform 0.3s ease',
+            boxShadow: sidebarOpen ? '4px 0 24px rgba(0,0,0,0.4)' : 'none',
+          } : {}),
         }}>
           {/* 헤더 */}
           <div style={{ padding: '20px 20px 14px' }}>
-            <h1 style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: 20, color: 'var(--text)', lineHeight: 1.2 }}>
-              전국 동아리원 <span style={{ color: 'var(--primary)' }}>지도</span>
-            </h1>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <h1 style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: 20, color: 'var(--text)', lineHeight: 1.2 }}>
+                전국 동아리원 <span style={{ color: 'var(--primary)' }}>지도</span>
+              </h1>
+              {isMobile && (
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-dim)', fontSize: 20, lineHeight: 1, padding: '0 0 0 8px' }}
+                >✕</button>
+              )}
+            </div>
             <p style={{ fontSize: 12, color: 'var(--text-dim)', marginTop: 6, lineHeight: 1.5 }}>
               전국에 흩어진 미디올로지 동아리원을 한눈에
             </p>
@@ -189,6 +230,24 @@ export default function Home() {
 
         {/* ── 지도 영역 ───────────────────────────────────── */}
         <main style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+          {/* 모바일 사이드바 열기 버튼 */}
+          {isMobile && !sidebarOpen && (
+            <button
+              onClick={() => setSidebarOpen(true)}
+              style={{
+                position: 'absolute', top: 12, left: 12, zIndex: 300,
+                background: 'var(--surface)',
+                border: '1px solid var(--border)',
+                borderRadius: 10,
+                color: 'var(--text)',
+                fontSize: 18,
+                width: 40, height: 40,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer',
+                boxShadow: '0 2px 12px rgba(0,0,0,0.4)',
+              }}
+            >☰</button>
+          )}
           <MapView
             members={members}
             selectedId={selected?._id}
@@ -234,7 +293,7 @@ export default function Home() {
           {user && !myMember && (
             <button
               className="btn-primary animate-fade-in"
-              onClick={() => { setTab('myprofile'); }}
+              onClick={() => { setTab('myprofile'); setSidebarOpen(true); }}
               style={{
                 position: 'absolute', bottom: 24, right: 24,
                 boxShadow: '0 4px 20px rgba(29,233,182,0.4)',
