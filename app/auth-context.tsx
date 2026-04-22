@@ -31,8 +31,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
-    await fetch('/api/auth/login', { method: 'DELETE' });
-    setUser(null);
+    try {
+      await fetch('/api/auth/login', { method: 'DELETE' });
+    } catch {
+      // 네트워크 오류여도 클라이언트 상태는 초기화
+    } finally {
+      setUser(null);
+    }
   };
 
   useEffect(() => { refresh(); }, []);
