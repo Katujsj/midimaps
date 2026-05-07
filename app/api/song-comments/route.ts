@@ -41,11 +41,11 @@ export async function POST(req: NextRequest) {
 
     await connectDB();
 
-    const start = new Date();
-    start.setHours(0, 0, 0, 0);
-
-    const end = new Date();
-    end.setHours(23, 59, 59, 999);
+    const KST = 9 * 60 * 60 * 1000;
+    const nowKST = new Date(Date.now() + KST);
+    const y = nowKST.getUTCFullYear(), mo = nowKST.getUTCMonth(), d = nowKST.getUTCDate();
+    const start = new Date(Date.UTC(y, mo, d, 0, 0, 0, 0) - KST);
+    const end   = new Date(Date.UTC(y, mo, d, 23, 59, 59, 999) - KST);
 
     const alreadyPosted = await Comment.findOne({
       authorId: user.id,

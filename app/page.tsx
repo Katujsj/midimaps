@@ -198,11 +198,11 @@ export default function Home() {
   };
 
   const handleReaction = async (commentIndex: number, emoji: '❤️' | '👍' | '😂') => {
+    if (!user?.id) return;
     const comment = todayComments[commentIndex];
     if (!comment?._id) return;
 
-    const currentUser = user?.id || user?.name || '테스트';
-    const currentReaction = comment.reactions?.[currentUser];
+    const currentReaction = comment.reactions?.[user.id];
     const nextEmoji = currentReaction === emoji ? '' : emoji;
 
     try {

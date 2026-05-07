@@ -36,15 +36,12 @@ export async function PATCH(
       );
     }
 
-    if (!comment.reactions) {
-      comment.reactions = new Map();
-    }
-
     if (emoji === '') {
       comment.reactions.delete(String(user.id));
     } else {
       comment.reactions.set(String(user.id), emoji);
     }
+    comment.markModified('reactions');
 
     await comment.save();
 
