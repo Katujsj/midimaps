@@ -36,6 +36,8 @@ export async function PATCH(
       );
     }
 
+    if (!comment.reactions) comment.reactions = new Map();
+
     if (emoji === '') {
       comment.reactions.delete(String(user.id));
     } else {
