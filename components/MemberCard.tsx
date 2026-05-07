@@ -8,9 +8,10 @@ interface Props {
   isSelected?: boolean;
   onClick?: () => void;
   onEdit?: () => void;
+  onOpenSongs?: () => void;
 }
 
-export default function MemberCard({ member, isSelected, onClick, onEdit }: Props) {
+export default function MemberCard({ member, isSelected, onClick, onEdit, onOpenSongs }: Props) {
   const { user } = useAuth();
   const isOwner = user?.id === member.userId;
   const initials = member.name.charAt(0);
@@ -23,6 +24,7 @@ export default function MemberCard({ member, isSelected, onClick, onEdit }: Prop
         alignItems: 'center',
         gap: 12,
         padding: '12px 16px',
+        position: 'relative',
         borderRadius: 12,
         cursor: 'pointer',
         transition: 'all 0.2s',
@@ -85,6 +87,41 @@ export default function MemberCard({ member, isSelected, onClick, onEdit }: Prop
           ✏️
         </button>
       )}
+
+      {onOpenSongs && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenSongs();
+          }}
+          title="추천곡 보기"
+          style={{
+            position: 'absolute',
+            right: 12,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: 28,
+            height: 28,
+            borderRadius: '50%',
+            border: '1px solid var(--border)',
+            background: 'var(--surface2)',
+            color: 'var(--primary)',
+            fontSize: 18,
+            lineHeight: '18px',
+            paddingBottom: 5,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          ›
+        </button>
+      )}
+
+
     </div>
+
+    
   );
 }
