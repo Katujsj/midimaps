@@ -11,7 +11,7 @@ import type { IMember } from '@/types';
 
 const MapView = dynamic(() => import('@/components/MapView'), { ssr: false });
 
-type SideTab = 'members' | 'comments' | 'myprofile';
+type SideTab = 'members' | 'comments' | 'myprofile' | 'songroom';
 
 export default function Home() {
   const { user, loading: authLoading } = useAuth();
@@ -66,12 +66,12 @@ export default function Home() {
   }, [currentSong]);
 
   useEffect(() => {
-    const check = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-      if (mobile) setSidebarOpen(false);
-    };
-    check();
+    const initialMobile = window.innerWidth < 768;
+    setIsMobile(initialMobile);
+    if (initialMobile) setSidebarOpen(false);
+
+    // resize에서 setSidebarOpen 호출 안 함 — iOS 키보드 open/close가 resize를 트리거해서 사이드바가 닫히는 버그 방지
+    const check = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', check);
     return () => window.removeEventListener('resize', check);
   }, []);
@@ -330,6 +330,7 @@ export default function Home() {
             {([
               { key: 'members',   label: '멤버' },
               { key: 'comments',  label: '의견' },
+              { key: 'songroom',  label: '추천방' },
               { key: 'myprofile', label: '내 프로필' },
             ] as const).map(t => (
               <button
@@ -406,7 +407,7 @@ export default function Home() {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {rightComments
-                    .filter((item) => item.authorName === selectedMemberSongs.name)
+                    .filter((item) => item.authorId === selectedMemberSongs.userId)
                     .map((item, idx) => (
                       <a
                         key={item._id || idx}
@@ -494,6 +495,91 @@ export default function Home() {
             {/* 의견 탭 */}
             {tab === 'comments' && <CommentBoard />}
 
+            {/* 추천방 탭 */}
+            {tab === 'songroom' && (
+              <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+                <div style={{ padding: '12px 16px 10px', flexShrink: 0 }}>
+                  <p style={{ fontSize: 12, color: 'var(--text-dim)', marginBottom: 10 }}>👍 1일 1추천, 표현 남기면 하나 더</p>
+                  <input
+                    value={rightCommentInput}
+                    onChange={(e) => setRightCommentInput(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleRightCommentSubmit(); }}
+                    placeholder="유튜브 링크를 입력하세요"
+                    className="input-field"
+                    style={{ fontSize: 13, marginBottom: 8 }}
+                  />
+                  <button className="btn-primary" onClick={handleRightCommentSubmit} style={{ width: '100%', fontSize: 13, padding: '8px' }}>
+                    추천곡 남기기
+                  </button>
+                </div>
+                <div style={{ flex: 1, overflowY: 'auto', padding: '0 12px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {todayComments.length === 0 ? (
+                    <div style={{ textAlign: 'center', color: 'var(--text-dim)', fontSize: 13, paddingTop: 24 }}>
+                      오늘의 추천곡이 없어요 🎵
+                    </div>
+                  ) : todayComments.map((c, i) => (
+                    <div key={c._id || i} style={{ background: 'var(--surface2)', borderRadius: 12, overflow: 'hidden', border: '1px solid var(--border)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px 6px' }}>
+                        <div style={{ width: 24, height: 24, borderRadius: '50%', overflow: 'hidden', background: 'var(--surface)', border: '1px solid var(--primary)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: 'var(--primary)' }}>
+                          {c.authorAvatarUrl
+                            ? <img src={c.authorAvatarUrl} alt="" style={{ width: 24, height: 24, objectFit: 'cover', display: 'block' }} />
+                            : c.authorName?.charAt(0) || '?'}
+                        </div>
+                        <span style={{ fontSize: 12, color: 'var(--primary)', fontWeight: 700 }}>{c.authorName || '익명'}</span>
+                        <span style={{ fontSize: 10, color: 'var(--text-dim)', marginLeft: 'auto' }}>
+                          {c.createdAt ? new Date(c.createdAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : ''}
+                        </span>
+                      </div>
+                      {c.songThumbnailUrl && (
+                        <div style={{ position: 'relative' }}>
+                          <img
+                            src={c.songThumbnailUrl} alt=""
+                            onClick={() => {
+                              if (user?.id && String(c.authorId) === String(user.id)) { showToast('내 추천곡에는\n감정표현을 남길 수 없어요'); return; }
+                              setRightComments(prev => prev.map((comment) => ({
+                                ...comment,
+                                showReactionPicker: comment._id === c._id ? !comment.showReactionPicker : false,
+                              })));
+                            }}
+                            style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block', cursor: 'pointer' }}
+                          />
+                          {c.showReactionPicker && (
+                            <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', display: 'flex', gap: 6, padding: '5px 8px', borderRadius: 999, background: 'rgba(8,12,20,0.92)', border: '1px solid var(--border)', zIndex: 5 }}>
+                              {(['❤️', '👍', '😂'] as const).map((emoji) => (
+                                <button key={emoji} onClick={(e) => { e.stopPropagation(); handleReaction(i, emoji); }}
+                                  style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 20, lineHeight: 1, padding: 2 }}>
+                                  {emoji}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      <div style={{ padding: '8px 12px 10px' }}>
+                        <a href={c.songUrl || extractYoutubeUrl(c.content) || '#'} target="_blank" rel="noreferrer"
+                          style={{ fontSize: 12, color: 'var(--text)', display: 'block', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {c.songUrl || c.content}
+                        </a>
+                        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                          {(['❤️', '👍', '😂'] as const).map((emoji) => {
+                            const reactions = c.reactions || {};
+                            const count = Object.values(reactions).filter((r) => r === emoji).length;
+                            if (count === 0) return null;
+                            const isReacted = user?.id && reactions[user.id] === emoji;
+                            return (
+                              <span key={emoji} style={{ fontSize: 11, padding: '2px 7px', borderRadius: 999, background: isReacted ? 'var(--primary-dim)' : 'rgba(8,12,20,0.8)', border: `1px solid ${isReacted ? 'var(--primary)' : 'var(--border)'}`, color: isReacted ? 'var(--primary)' : 'var(--text-dim)' }}>
+                                {emoji} {count}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* 내 프로필 탭 */}
             {tab === 'myprofile' && (
               <div style={{ padding: 16 }}>
@@ -520,7 +606,7 @@ export default function Home() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                       <div style={{ width: 60, height: 60, borderRadius: '50%', border: '2px solid var(--primary)', overflow: 'hidden', background: 'var(--surface2)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 16px rgba(29,233,182,0.3)' }}>
                         {myMember.avatarUrl
-                          ? <img src={myMember.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ? <img src={myMember.avatarUrl} alt="" style={{ width: 60, height: 60, objectFit: 'cover', display: 'block' }} />
                           : <span style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: 22, color: 'var(--primary)' }}>{myMember.name.charAt(0)}</span>
                         }
                       </div>
@@ -616,6 +702,7 @@ export default function Home() {
             onMarkerClick={(m) => {
               setSelected(prev => prev?._id === m._id ? null : m);
               setTab('members');
+              if (isMobile) setSidebarOpen(true);
             }}
           />
 
@@ -635,7 +722,7 @@ export default function Home() {
             >
               <div style={{ width: 48, height: 48, borderRadius: '50%', border: '2px solid var(--primary)', overflow: 'hidden', background: 'var(--surface2)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 12px rgba(29,233,182,0.4)' }}>
                 {selected.avatarUrl
-                  ? <img src={selected.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ? <img src={selected.avatarUrl} alt="" style={{ width: 48, height: 48, objectFit: 'cover', display: 'block' }} />
                   : <span style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: 18, color: 'var(--primary)' }}>{selected.name.charAt(0)}</span>
                 }
               </div>
@@ -1043,10 +1130,10 @@ export default function Home() {
                             }
 
                             setRightComments(prev =>
-                              prev.map((comment, index) => ({
+                              prev.map((comment) => ({
                                 ...comment,
                                 showReactionPicker:
-                                  index === i ? !comment.showReactionPicker : false,
+                                  comment._id === c._id ? !comment.showReactionPicker : false,
                               }))
                             );
                           }}

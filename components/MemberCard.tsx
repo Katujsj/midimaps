@@ -47,7 +47,7 @@ export default function MemberCard({ member, isSelected, onClick, onEdit, onOpen
         boxShadow: isSelected ? '0 0 10px rgba(29,233,182,0.4)' : 'none',
       }}>
         {member.avatarUrl ? (
-          <img src={member.avatarUrl} alt={member.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img src={member.avatarUrl} alt={member.name} style={{ width: 40, height: 40, objectFit: 'cover', display: 'block' }} />
         ) : (
           <span style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: 16, color: isSelected ? 'var(--primary)' : 'var(--text-dim)' }}>
             {initials}

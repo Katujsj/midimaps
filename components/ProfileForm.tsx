@@ -101,6 +101,14 @@ export default function ProfileForm({ existing, onSuccess, onCancel }: Props) {
       <div>
         <label style={labelStyle}>프로필 이미지 URL (선택)</label>
         <input className="input-field" placeholder="https://..." value={form.avatarUrl} onChange={set('avatarUrl')} />
+        {form.avatarUrl && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 8 }}>
+            <div style={{ width: 48, height: 48, borderRadius: '50%', overflow: 'hidden', border: '2px solid var(--primary)', flexShrink: 0 }}>
+              <img src={form.avatarUrl} alt="미리보기" style={{ width: 48, height: 48, objectFit: 'cover', display: 'block' }} />
+            </div>
+            <span style={{ fontSize: 11, color: 'var(--text-dim)' }}>지도에 이렇게 표시됩니다</span>
+          </div>
+        )}
       </div>
 
       {/* 위치 선택 지도 */}
