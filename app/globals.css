@@ -204,3 +204,231 @@ html, body {
   color: var(--primary);
 }
 .tab-btn:hover:not(.active) { color: var(--text); }
+
+/* ⭐ LP 생성, 여기 크기만 수정됨 */
+.lp-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 24px 0 18px;
+  margin-top: -20px; /* ⭐ 추가 */
+}
+
+.lp-disc {
+  width: 90%;
+  max-width: none;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  position: relative;
+
+  background:
+    radial-gradient(circle at center, transparent 0 14%, var(--surface2) 15% 100%),
+    repeating-radial-gradient(
+      circle at center,
+      rgba(255, 255, 255, 0.08) 0 1px,
+      var(--surface) 2px 5px
+    );
+
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--primary) 60%, transparent),
+    0 0 25px color-mix(in srgb, var(--primary) 35%, transparent),
+    inset 0 0 18px rgba(255, 255, 255, 0.08),
+    inset 0 0 45px rgba(0, 0, 0, 0.65),
+    0 18px 35px rgba(0, 0, 0, 0.25);
+
+  animation: lp-spin 4s linear infinite;
+}
+
+.lp-disc::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background:
+    linear-gradient(
+      115deg,
+      transparent 8%,
+      rgba(255, 255, 255, 0.28) 18%,
+      transparent 34%
+    ),
+    linear-gradient(
+      260deg,
+      transparent 58%,
+      rgba(255, 255, 255, 0.14) 70%,
+      transparent 82%
+    );
+  opacity: 0.65;
+}
+
+.lp-disc::after {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+}
+
+.lp-label {
+  position: absolute;
+  width: 34%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  background:
+    radial-gradient(circle at center, var(--surface) 0 7%, transparent 8%),
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.35), transparent 35%),
+    var(--primary);
+
+  box-shadow:
+    0 0 18px color-mix(in srgb, var(--primary) 45%, transparent),
+    inset 0 0 12px rgba(255, 255, 255, 0.25);
+}
+
+.lp-hole {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--text);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes lp-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.song-title-marquee-track {
+  position: absolute;
+  left: 0;
+  display: flex;
+  gap: 40px;
+  white-space: nowrap;
+  animation-name: song-title-marquee-track;
+  animation-duration: var(--marquee-duration, 14s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-delay: 1.5s;
+}
+
+.song-title-marquee-track span {
+  flex-shrink: 0;
+}
+
+@keyframes song-title-marquee-track {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-1 * var(--marquee-distance, 200px)));
+  }
+}
+
+.comment-link {
+  display: block;
+  text-decoration: none;
+  color: var(--text);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+/* hover 시 */
+.comment-link:hover {
+  color: var(--primary);
+}
+
+/* 내부 텍스트에 밑줄 효과 */
+.comment-link:hover div {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+
+@keyframes toast-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toast-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+}
+
+.reaction-pill {
+  animation: reaction-pop 0.22s ease both;
+  transition: transform 0.22s ease, opacity 0.22s ease;
+}
+
+@keyframes reaction-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.65) translateY(-4px);
+  }
+
+  70% {
+    opacity: 1;
+    transform: scale(1.12) translateY(0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.reaction-pill-out {
+  animation: reaction-out 0.25s ease forwards;
+}
+
+@keyframes reaction-out {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(0.6) translateY(6px);
+  }
+}
+
+.member-songs-page-enter {
+  animation: memberSongsPageEnter 0.35s ease both;
+}
+
+@keyframes memberSongsPageEnter {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
