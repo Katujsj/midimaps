@@ -90,7 +90,7 @@ export default function MapView({ members, onMarkerClick, selectedId, onMapReady
       const isSelected = member._id === selectedId;
 
       const iconHtml = member.avatarUrl
-        ? `<div class="member-marker-pin"><img class="member-marker-img" src="${member.avatarUrl}" alt="${member.name}" onerror="this.style.display='none';this.nextSibling.style.display='flex'" /><div class="member-marker-dot" style="display:none">${initials}</div>${isSelected ? '<div style="position:absolute;inset:-4px;border-radius:50%;border:2px solid #1de9b6;animation:pulse-ring 1.5s ease-out infinite;pointer-events:none"></div>' : ''}</div>`
+        ? `<div class="member-marker-pin"><div class="member-marker-wrap"><img class="member-marker-img" src="${member.avatarUrl}" alt="${member.name}" onerror="this.parentElement.style.display='none';this.parentElement.nextElementSibling.style.display='flex'" /></div><div class="member-marker-dot" style="display:none">${initials}</div>${isSelected ? '<div style="position:absolute;inset:-4px;border-radius:50%;border:2px solid #1de9b6;animation:pulse-ring 1.5s ease-out infinite;pointer-events:none"></div>' : ''}</div>`
         : `<div class="member-marker-pin"><div class="member-marker-dot">${initials}</div>${isSelected ? '<div style="position:absolute;inset:-4px;border-radius:50%;border:2px solid #1de9b6;animation:pulse-ring 1.5s ease-out infinite;pointer-events:none"></div>' : ''}</div>`;
 
       const icon = L.divIcon({

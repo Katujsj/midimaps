@@ -65,13 +65,18 @@ html, body {
   transition: transform 0.2s ease;
 }
 .member-marker-pin:hover { transform: scale(1.15) translateY(-2px); }
-.member-marker-img {
+.member-marker-wrap {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  border: 2px solid var(--primary);
+  overflow: hidden;
+  box-shadow: 0 0 0 2px var(--primary), 0 0 12px rgba(29, 233, 182, 0.5);
+}
+.member-marker-img {
+  width: 44px;
+  height: 44px;
   object-fit: cover;
-  box-shadow: 0 0 12px rgba(29, 233, 182, 0.5);
+  display: block;
 }
 .member-marker-dot {
   width: 44px;
